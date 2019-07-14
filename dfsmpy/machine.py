@@ -1,4 +1,4 @@
-"""State machine."""
+"""Deterministic, Finite State machine."""
 import copy
 
 
@@ -8,43 +8,7 @@ class StopMachine(Exception):
 
 
 class StateMachine:
-    """
-    StateMachine:
-    A deterministic, finite state machine.
-
-    Blueprint:
-    {
-        "context": {dict},
-        "alphabet": {set},
-        "initialState": state,
-        "validStates": {set},
-        "acceptedStates": {set},
-        "finalStates": {set},
-        "transition": function(context, event) -> state
-    }
-
-    Context:
-    A dictionary, which can be modified during state transition.
-
-    Alphabet:
-    A set of events, which are used to drive state transitions.
-
-    Initial State:
-    The starting state.
-
-    Valid States:
-    A set of valid states.
-
-    Accepted States:
-    A set of accepted states.
-
-    Final States:
-    A set of final states, which raise StopMachine if a transition made from.
-
-    Transition:
-    A function, which returns the next state.
-    """
-
+    """Deterministic, Finite State machine."""
     def __init__(self, blueprint):
         """Override."""
         self.blueprint = blueprint
@@ -77,27 +41,27 @@ class StateMachine:
 
         self.reset()
 
-    def reset(self):
-        """Set the state machine to its initial state and context."""
-        self.state = self.blueprint["initialState"]
-        self.context = self.blueprint["context"]
-        self.accepted = self.is_accepted(self.state)
+    def is_initial(self, state):
+        """Return True if state is the initial state."""
+        return state == self.blueprint["initialState"]
 
     def is_valid(self, state):
         """Return True if state is a valid state."""
         return state in self.blueprint["validStates"]
 
-    def is_initial(self, state):
-        """Return True if state is the initial state."""
-        return state == self.blueprint["initialState"]
+    def is_accepted(self, state):
+        """Return True if state is an accepted state."""
+        return state in self.blueprint["acceptedStates"]
 
     def is_final(self, state):
         """Return True if state is the final state."""
         return state in self.blueprint["finalStates"]
 
-    def is_accepted(self, state):
-        """Return True if state is an accepted state."""
-        return state in self.blueprint["acceptedStates"]
+    def reset(self):
+        """Set the state machine to its initial state and context."""
+        self.state = self.blueprint["initialState"]
+        self.context = self.blueprint["context"]
+        self.accepted = self.is_accepted(self.state)
 
     def transition(self, event):
         """
@@ -122,14 +86,3 @@ class StateMachine:
         self.state = state
         self.context = context
         self.accepted = self.is_accepted(self.state)
-
-
-if __name__ == "__main__":
-    machine = StateMachine({
-        "alphabet": {1, 2},
-        "initialState": 1,
-        "validStates": {1, 2},
-        "acceptedStates": {2},
-        "finalStates": {2},
-        "transition": lambda _, e: e
-    })
