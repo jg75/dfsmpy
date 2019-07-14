@@ -1,9 +1,30 @@
 from random import choice
-from unittest.mock import create_autospec
+from unittest.mock import MagicMock
 
 from pytest import fixture, raises
 
 from dfsmpy import StateMachine, StopMachine
+
+
+def test_invalid_machine():
+    with raises(ValueError):
+        StateMachine(dict())
+
+
+@fixture(scope="function")
+def default_machine():
+    return {
+        "initialState": 0,
+        "validStates": {0}
+    }
+
+
+def test_default_machine(default_machine):
+    machine = StateMachine(default_machine)
+
+    assert machine.context == dict()
+    assert not machine.is_accepted(machine.state)
+    assert not machine.is_final(machine.state)
 
 
 @fixture(scope="function")
@@ -13,17 +34,12 @@ def simple_machine():
         "validStates": {1, 2, 3, 4},
         "acceptedStates": {3},
         "finalStates": {4},
-        "alphabet": {1, 2, 3, 4},
-        "transition": lambda _, s: s
+        "alphabet": {1, 2, 3, 4}
     }
 
 
 def test_blueprint(simple_machine):
     machine = StateMachine(simple_machine)
-
-    assert machine.blueprint["initialState"] == simple_machine.get("initialState")
-    assert machine.blueprint["initialContext"] == simple_machine.get("initialContext", {})
-    assert machine.blueprint["alphabet"] == simple_machine["alphabet"]
 
     for state in simple_machine["validStates"]:
         assert machine.is_valid(state)
@@ -34,11 +50,9 @@ def test_blueprint(simple_machine):
     for state in simple_machine["finalStates"]:
         assert machine.is_final(state)
 
-    assert machine.is_initial(machine.state)
-    assert not machine.is_accepted(machine.state)
-    assert not machine.is_final(machine.state)
-    assert machine.context == machine.blueprint["initialContext"]
+    assert machine.initial
     assert not machine.accepted
+    assert not machine.final
 
 
 def test_blueprint_invalid_initial_state(simple_machine):
@@ -49,8 +63,7 @@ def test_blueprint_invalid_initial_state(simple_machine):
 
 
 def test_transition_function(simple_machine, event=1):
-    mock_transition = create_autospec(simple_machine["transition"])
-    mock_transition.return_value = event
+    mock_transition = MagicMock(return_value=event)
     simple_machine["transition"] = mock_transition
     machine = StateMachine(simple_machine)
 
@@ -66,13 +79,15 @@ def test_transition_context(simple_machine, event=2):
     simple_machine["transition"] = transition
     machine = StateMachine(simple_machine)
 
-    assert machine.context == simple_machine.get("context", {})
+    assert machine.context == simple_machine.get("context", dict())
 
     machine.transition(event)
 
     assert machine.state == event
-    assert not machine.accepted
     assert machine.context["value"] == event
+    #assert not machine.initial
+    assert not machine.accepted
+    assert not machine.final
 
 
 def test_transition_accepted(simple_machine, event=3):
@@ -80,7 +95,9 @@ def test_transition_accepted(simple_machine, event=3):
 
     machine.transition(event)
     assert machine.state == event
+    #assert not machine.initial
     assert machine.accepted
+    assert not machine.final
 
 
 def test_transition_final_state(simple_machine, event=4):
@@ -88,7 +105,11 @@ def test_transition_final_state(simple_machine, event=4):
 
     machine.transition(event)
     assert machine.state == event
+    #assert not machine.initial
     assert not machine.accepted
+
+    assert machine.final
+    assert machine.is_final(machine.state)
 
     with raises(StopMachine):
         machine.transition(event)
@@ -121,8 +142,8 @@ def test_reset(simple_machine, event=3):
     assert machine.context == {"value": event}
 
     machine.reset()
-    assert machine.is_initial(machine.state)
-    assert machine.context == machine.blueprint["initialContext"]
+    assert machine.initial
+    assert machine.context == simple_machine.get("context", dict())
 
 
 @fixture(scope="session")

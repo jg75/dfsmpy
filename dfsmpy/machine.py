@@ -31,37 +31,65 @@ class StateMachine:
 
         Raise ValueError if the initial state is invalid.
         """
-        if blueprint["initialState"] not in blueprint["validStates"]:
-            raise ValueError("Invalid state")
-
-        if not blueprint.get("initialContext"):
-            blueprint["initialContext"] = dict()
-
         self.__blueprint = blueprint
 
         self.reset()
 
     def is_initial(self, state):
         """Return True if state is the initial state."""
-        return state == self.blueprint["initialState"]
+        try:
+            return state == self.blueprint["initialState"]
+        except KeyError:
+            return False
 
     def is_valid(self, state):
         """Return True if state is a valid state."""
-        return state in self.blueprint["validStates"]
+        try:
+            return state in self.blueprint["validStates"]
+        except KeyError:
+            return False
 
     def is_accepted(self, state):
         """Return True if state is an accepted state."""
-        return state in self.blueprint["acceptedStates"]
+        try:
+            return state in self.blueprint["acceptedStates"]
+        except KeyError:
+            return False
 
     def is_final(self, state):
         """Return True if state is the final state."""
-        return state in self.blueprint["finalStates"]
+        try:
+            return state in self.blueprint["finalStates"]
+        except KeyError:
+            return False
+
+    def is_event(self, event):
+        """Return True if the event is a valid event."""
+        try:
+            return event in self.blueprint["alphabet"]
+        except KeyError:
+            return False
 
     def reset(self):
         """Set the state machine to its initial state and context."""
-        self.state = self.blueprint["initialState"]
-        self.context = self.blueprint["initialContext"]
+        state = self.blueprint.get("initialState")
+        context = self.blueprint.get("initialContext", dict())
+
+        if not self.is_initial(state):
+            raise ValueError("Invalid state")
+
+        self.set_state(state, context)
+
+    def set_state(self, state, context):
+        """set the state machine to a new state and context."""
+        if not self.is_valid(state):
+            raise ValueError("Invalid state")
+
+        self.state = state
+        self.context = context
+        self.initial = self.is_initial(self.state)
         self.accepted = self.is_accepted(self.state)
+        self.final = self.is_final(self.state)
 
     def transition(self, event):
         """
@@ -73,16 +101,11 @@ class StateMachine:
         if self.is_final(self.state):
             raise StopMachine()
 
-        if event not in self.blueprint["alphabet"]:
+        if not self.is_event(event):
             raise ValueError("Invalid event")
 
-        function = self.blueprint["transition"]
+        function = self.blueprint.get("transition", lambda _, e: e)
         context = copy.deepcopy(self.context)
         state = function(context, event)
 
-        if not self.is_valid(state):
-            raise ValueError("Invalid state")
-
-        self.state = state
-        self.context = context
-        self.accepted = self.is_accepted(self.state)
+        self.set_state(state, context)
