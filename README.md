@@ -39,14 +39,14 @@ Setting the blueprint will also reset the state machine.
     "validStates": set(),
     "acceptedStates": set(),
     "finalStates": set(),
-    "transition": lambda context, event: state
+    "transition": lambda state, context, event: new_state
 }
 ```
 
 ##### Initial Context
 
-An optional dictionary, which can be used to share information between states and
-updated during state transitions.
+An optional dictionary, which can be used to share information between states
+and updated during state transitions.
 
 ##### Alphabet
 
@@ -70,8 +70,9 @@ A set of final states, once reached, new transitions will raise `StopMachine`.
 
 ##### Transition
 
-A function, which takes context and event as parameters and returns the next state.
-The event must be a member of the alphabet and the state must be a valid state.
+A function, which takes state, context and event as parameters
+and returns the next state.  The event must be a member of the alphabet
+and the new state must be a valid state.
 
 #### state
 
@@ -143,7 +144,7 @@ machine = StateMachine({
     "validStates": {1, 2},
     "acceptedStates": {2},
     "finalStates": {2},
-    "transition": lambda _, e: e
+    "transition": lambda a, c, e: e
 })
 
 machine.transition(2)

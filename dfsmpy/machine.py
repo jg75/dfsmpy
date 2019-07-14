@@ -112,8 +112,8 @@ class StateMachine:
         if not self.is_event(event):
             raise ValueError("Invalid event")
 
-        function = self.blueprint.get("transition", lambda _, e: e)
+        function = self.blueprint.get("transition", lambda s, c, e: e)
         context = copy.deepcopy(self.context)
-        state = function(context, event)
+        state = function(self.state, context, event)
 
         self.set_state(state, context)

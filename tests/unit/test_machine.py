@@ -68,11 +68,13 @@ def test_transition_function(simple_machine, event=1):
     machine = StateMachine(simple_machine)
 
     machine.transition(event)
-    mock_transition.assert_called_once_with(machine.context, event)
+    mock_transition.assert_called_once_with(
+        machine.state, machine.context, event
+    )
 
 
 def test_transition_context(simple_machine, event=2):
-    def transition(context, event):
+    def transition(state, context, event):
         context["value"] = event
         return event
 
@@ -131,7 +133,7 @@ def test_transition_invalid_state(simple_machine, event=1):
 
 
 def test_reset(simple_machine, event=3):
-    def transition(context, event):
+    def transition(state, context, event):
         context["value"] = event
         return event
 
@@ -152,7 +154,7 @@ def binary_multiples():
     Return a state machine blueprint that accepts binary numbers that are
     multiples of 3.
     """
-    def transition(context, event):
+    def transition(state, context, event):
         """
         Trigger a transition to a new state by event and update context value.
         Shift the context value left 1 bit and add the event bit
