@@ -1,5 +1,57 @@
 # Deterministic, Finite State Machine
 
+## Contents
+* [Installation](#installation)
+* [State Machine](#statemachine)
+* [Blueprint](#blueprint)
+* [Usage](#usage)
+
+## Installation
+
+```
+python setyp.py install
+```
+
+## StateMachine
+
+### Members
+
+#### blueprint
+
+This is a propery with a getter and setter. Setting the blueprint will also
+reset the state machine.
+
+#### state
+
+The current state of the state machine.
+
+#### context
+
+The current context of the state machine.
+
+#### accepted
+
+True or False if the current state is an accepted state.
+
+### Methods
+
+#### reset()
+
+Resets the state machine's state and context to their initial values defined
+in the blueprint.
+
+#### transition(event) -> blueprint.transition(context, event) -> state
+
+Transitions the state machine to the next state by executing the transition
+defined in the blueprint. The event must be a valid member of the alphabet
+defined in the blueprint.
+
+#### Ancillary Functions
+* is_initial(state) -> True | False
+* is_valid(state) -> True | False
+* is_accepted(state) -> True | False
+* is_final(state) -> True | False
+
 ## Blueprint
 
 The blueprint defines this state machine.
@@ -47,47 +99,6 @@ A function, which returns the next state. Must be a valid state or
 a ValueError will be raised. This function will be called with context and
 an event. The event must be a member of alphabet or a ValueError
 will be raised.
-
-
-## StateMachine
-
-### Members
-
-#### blueprint
-
-This is a propery with a getter and setter. Setting the blueprint will also
-reset the state machine.
-
-#### state
-
-The current state of the state machine.
-
-#### context
-
-The current context of the state machine.
-
-#### accepted
-
-True or False if the current state is an accepted state.
-
-### Methods
-
-#### reset()
-
-Resets the state machine's state and context to their initial values defined
-in the blueprint.
-
-#### transition(event) -> blueprint.transition(context, event) -> state
-
-Transitions the state machine to the next state by executing the transition
-defined in the blueprint. The event must be a valid member of the alphabet
-defined in the blueprint.
-
-#### Ancillary Functions
-* is_initial(state) -> True | False
-* is_valid(state) -> True | False
-* is_accepted(state) -> True | False
-* is_final(state) -> True | False
 
 ## Usage
 
