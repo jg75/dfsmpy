@@ -22,7 +22,9 @@ python setyp.py install
 * [blueprint](#blueprint)
 * [state](#state)
 * [context](#context)
+* [initial](#initial)
 * [accepted](#accepted)
+* [final](#final)
 
 #### blueprint
 
