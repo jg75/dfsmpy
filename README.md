@@ -43,9 +43,8 @@ Setting the blueprint will also reset the state machine.
 
 ##### Initial Context
 
-A dictionary, which can be used to share information between states and
-updated during state transitions. Note that this is optional and won't
-raise a KeyError if it's not a member of `blueprint`.
+An optional dictionary, which can be used to share information between states and
+updated during state transitions.
 
 ##### Alphabet
 
@@ -53,7 +52,7 @@ A set of events, which are used to drive state transitions.
 
 ##### Initial State
 
-The starting state. Must be a valid state or a ValueError will be raised.
+The starting state. Must be a valid state.
 
 ##### Valid States
 
@@ -69,10 +68,8 @@ A set of final states, once reached, new transitions will raise `StopMachine`.
 
 ##### Transition
 
-A function, which returns the next state. Must be a valid state or
-a ValueError will be raised. This function will be called with context and
-an event. The event must be a member of alphabet or a ValueError
-will be raised.
+A function, which takes context and event as parameters and returns the next state.
+The event must be a member of the alphabet and the state must be a valid state.
 
 #### state
 
@@ -99,13 +96,24 @@ True or False if the current state is a final state.
 #### reset()
 
 Resets the state machine's state and context to their initial values defined
-in the blueprint.
+in the blueprint. The initial state must be a valid state.
 
-#### transition(event) -> blueprint.transition(context, event) -> state
+* `ValueError` - Invalid initial state
+
+#### set_state(state, context)
+
+Set the state machine's state and context. The state must be a valid state.
+
+* `ValueError` - Invalid state
+
+#### transition(event)
 
 Transitions the state machine to the next state by executing the transition
 defined in the blueprint. The event must be a valid member of the alphabet
-defined in the blueprint.
+defined in the blueprint. The state must be a valid state.
+
+* `StopMachine` - Current state is final
+* `ValueError` - Invalid event
 
 #### is_initial(state) -> True | False
 
