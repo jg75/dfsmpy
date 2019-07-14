@@ -71,7 +71,11 @@ class StateMachine:
             return False
 
     def reset(self):
-        """Set the state machine to its initial state and context."""
+        """
+        Set the state machine to its initial state and context.
+
+        Raise ValueError if the state is invalid.
+        """
         state = self.blueprint.get("initialState")
         context = self.blueprint.get("initialContext", dict())
 
@@ -81,7 +85,11 @@ class StateMachine:
         self.set_state(state, context)
 
     def set_state(self, state, context):
-        """set the state machine to a new state and context."""
+        """
+        set the state machine to a new state and context.
+
+        Raise ValueError if the state is invalid.
+        """
         if not self.is_valid(state):
             raise ValueError("Invalid state")
 
