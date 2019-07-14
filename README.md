@@ -82,9 +82,17 @@ The current state of the state machine.
 
 The current context of the state machine.
 
+#### initial
+
+True or False if the current state is the initial state.
+
 #### accepted
 
 True or False if the current state is an accepted state.
+
+#### final
+
+True or False if the current state is a final state.
 
 ### Methods
 
@@ -107,12 +115,14 @@ defined in the blueprint.
 
 #### is_final(state) -> True | False
 
+#### is_event(event) -> True | False
+
 ---
 
 ## Usage
 
-Create a state machine with a blueprint and transition from the initial state
-to accepted, final state `2`.
+Create a state machine with a blueprint and transition
+from the initial state `1` to accepted, final state `2`.
 
 ```python
 from dfsmpy import StateMachine
