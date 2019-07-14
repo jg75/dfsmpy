@@ -9,17 +9,18 @@ class StopMachine(Exception):
 
 class StateMachine:
     """
-    StateMachine
+    StateMachine:
+    A deterministic, finite state machine.
 
     Blueprint:
     {
-        context: { dict },
-        alphabet: { set },
-        intialState: state,
-        validStates: { set },
-        acceptedStates: { set },
-        finalStates: { set },
-        transition: function(context, event) -> state
+        "context": {dict},
+        "alphabet": {set},
+        "initialState": state,
+        "validStates": {set},
+        "acceptedStates": {set},
+        "finalStates": {set},
+        "transition": function(context, event) -> state
     }
 
     Context:
@@ -121,3 +122,14 @@ class StateMachine:
         self.state = state
         self.context = context
         self.accepted = self.is_accepted(self.state)
+
+
+if __name__ == "__main__":
+    machine = StateMachine({
+        "alphabet": {1, 2},
+        "initialState": 1,
+        "validStates": {1, 2},
+        "acceptedStates": {2},
+        "finalStates": {2},
+        "transition": lambda _, e: e
+    })

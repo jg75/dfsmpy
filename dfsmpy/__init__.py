@@ -1,4 +1,2 @@
 """dfsmpy."""
-
-
-from .machine import StopMachine, StateMachine
+from dfsmpy.machine import StateMachine, StopMachine
