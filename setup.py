@@ -1,4 +1,4 @@
-"""AWS SSM parameter store utility."""
+"""Deterministic, Finite State Machine."""
 import os
 from setuptools import setup, find_packages
 
