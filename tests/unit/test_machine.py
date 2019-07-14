@@ -85,7 +85,7 @@ def test_transition_context(simple_machine, event=2):
 
     assert machine.state == event
     assert machine.context["value"] == event
-    #assert not machine.initial
+    assert not machine.initial
     assert not machine.accepted
     assert not machine.final
 
@@ -95,7 +95,7 @@ def test_transition_accepted(simple_machine, event=3):
 
     machine.transition(event)
     assert machine.state == event
-    #assert not machine.initial
+    assert not machine.initial
     assert machine.accepted
     assert not machine.final
 
@@ -105,7 +105,7 @@ def test_transition_final_state(simple_machine, event=4):
 
     machine.transition(event)
     assert machine.state == event
-    #assert not machine.initial
+    assert not machine.initial
     assert not machine.accepted
 
     assert machine.final
