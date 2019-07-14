@@ -34,8 +34,8 @@ class StateMachine:
         if blueprint["initialState"] not in blueprint["validStates"]:
             raise ValueError("Invalid state")
 
-        if not blueprint.get("context"):
-            blueprint["context"] = dict()
+        if not blueprint.get("initialContext"):
+            blueprint["initialContext"] = dict()
 
         self.__blueprint = blueprint
 
@@ -60,7 +60,7 @@ class StateMachine:
     def reset(self):
         """Set the state machine to its initial state and context."""
         self.state = self.blueprint["initialState"]
-        self.context = self.blueprint["context"]
+        self.context = self.blueprint["initialContext"]
         self.accepted = self.is_accepted(self.state)
 
     def transition(self, event):

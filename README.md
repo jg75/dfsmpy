@@ -31,9 +31,9 @@ Setting the blueprint will also reset the state machine.
 
 ```python
 {
-    "context": dict(),
-    "alphabet": set(),
     "initialState": state,
+    "initialContext": dict(),
+    "alphabet": set(),
     "validStates": set(),
     "acceptedStates": set(),
     "finalStates": set(),
@@ -41,7 +41,7 @@ Setting the blueprint will also reset the state machine.
 }
 ```
 
-##### Context
+##### Initial Context
 
 A dictionary, which can be used to share information between states and
 updated during state transitions. Note that this is optional and won't

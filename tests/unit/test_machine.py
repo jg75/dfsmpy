@@ -9,11 +9,11 @@ from dfsmpy import StateMachine, StopMachine
 @fixture(scope="function")
 def simple_machine():
     return {
-        "alphabet": {1, 2, 3, 4},
         "initialState": 1,
         "validStates": {1, 2, 3, 4},
         "acceptedStates": {3},
         "finalStates": {4},
+        "alphabet": {1, 2, 3, 4},
         "transition": lambda _, s: s
     }
 
@@ -21,7 +21,8 @@ def simple_machine():
 def test_blueprint(simple_machine):
     machine = StateMachine(simple_machine)
 
-    assert machine.blueprint["context"] == simple_machine.get("context", {})
+    assert machine.blueprint["initialState"] == simple_machine.get("initialState")
+    assert machine.blueprint["initialContext"] == simple_machine.get("initialContext", {})
     assert machine.blueprint["alphabet"] == simple_machine["alphabet"]
 
     for state in simple_machine["validStates"]:
@@ -36,7 +37,7 @@ def test_blueprint(simple_machine):
     assert machine.is_initial(machine.state)
     assert not machine.is_accepted(machine.state)
     assert not machine.is_final(machine.state)
-    assert machine.context == machine.blueprint["context"]
+    assert machine.context == machine.blueprint["initialContext"]
     assert not machine.accepted
 
 
@@ -121,7 +122,7 @@ def test_reset(simple_machine, event=3):
 
     machine.reset()
     assert machine.is_initial(machine.state)
-    assert machine.context == machine.blueprint["context"]
+    assert machine.context == machine.blueprint["initialContext"]
 
 
 @fixture(scope="session")
@@ -141,12 +142,12 @@ def binary_multiples():
         return context["value"] % context["divisor"]
 
     return {
-        "context":  {"divisor": 3, "value": 0, "results": list()},
-        "alphabet": {0, 1},
+        "initialContext":  {"divisor": 3, "value": 0, "results": list()},
         "initialState": 0,
         "validStates": {0, 1, 2},
         "acceptedStates": {0},
         "finalStates": {},
+        "alphabet": {0, 1},
         "transition": transition
     }
 
@@ -160,7 +161,7 @@ def test_machine(binary_multiples):
 
         while not machine.is_accepted(machine.state) \
                 or not result \
-                or result in binary_multiples["context"]["results"]:
+                or result in machine.context["results"]:
             event = choice(list(machine.blueprint["alphabet"]))
 
             machine.transition(event)
@@ -168,5 +169,5 @@ def test_machine(binary_multiples):
             result = machine.context["value"]
 
         print(f"{machine}: {result:b} ({result})")
-        assert result % machine.blueprint["context"]["divisor"] == 0
-        binary_multiples["context"]["results"].append(result)
+        assert result % machine.context["divisor"] == 0
+        machine.context["results"].append(result)
