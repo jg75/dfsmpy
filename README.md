@@ -3,6 +3,12 @@
 ## Contents
 * [Installation](#installation)
 * [State Machine](#statemachine)
+* * [blueprint](#blueprint)
+* * [state](#state)
+* * [context](#context)
+* * [initial](#initial)
+* * [accepted](#accepted)
+* * [final](#final)
 * [Usage](#usage)
 
 ---
@@ -19,13 +25,6 @@ python setyp.py install
 
 ### Members
 
-* [blueprint](#blueprint)
-* [state](#state)
-* [context](#context)
-* [initial](#initial)
-* [accepted](#accepted)
-* [final](#final)
-
 #### blueprint
 
 This is a propery with a getter and setter that defines the state machine.
@@ -39,7 +38,8 @@ Setting the blueprint will also reset the state machine.
     "validStates": set(),
     "acceptedStates": set(),
     "finalStates": set(),
-    "transition": lambda state, context, event: new_state
+    "transition": lambda state, context, event: new_state,
+    "lifecycles": dict()
 }
 ```
 
@@ -73,6 +73,40 @@ A set of final states, once reached, new transitions will raise `StopMachine`.
 A function, which takes state, context and event as parameters
 and returns the next state.  The event must be a member of the alphabet
 and the new state must be a valid state.
+
+##### Lifecycles
+
+Lifecycle actions can be ran before or after specific events.
+
+###### Events
+
+A set of events, which are used to drive lifecycle actions.
+
+###### Actions
+
+A list of functions, which take state, context and event as parameters.
+
+```python
+{
+    "lifecycles": {
+        "before": [{
+            "events": {0, 1, 2, 3},
+            "actions": [before_any]
+        }],
+        "after": [{
+            events: {3},
+            "actions": [after_three]
+        }, {
+            "events": {2, 3},
+            "actions": [action1, action2]
+        }]
+    }
+}
+```
+
+* before_any executes before events 0, 1, 2 & 3 transitions are executed
+* after_three executres after event 3 transition is executed
+* action1, then action2 executes after events 2 & 3 transitions are executed
 
 #### state
 
