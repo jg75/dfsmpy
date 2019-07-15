@@ -112,8 +112,21 @@ class StateMachine:
         if not self.is_event(event):
             raise ValueError("Invalid event")
 
-        function = self.blueprint.get("transition", lambda s, c, e: e)
-        context = copy.deepcopy(self.context)
-        state = function(self.state, context, event)
+        def execute_lifecycle(lifecycle="before"):
+            lifecycles = self.blueprint.get("lifecycles", dict())
 
-        self.set_state(state, context)
+            for hook in lifecycles.get(lifecycle, []):
+                if event in hook["events"]:
+                    for action in hook["actions"]:
+                        action(self.state, self.context, event)
+
+        def execute_transition():
+            function = self.blueprint.get("transition", lambda s, c, e: e)
+            context = copy.deepcopy(self.context)
+            state = function(self.state, context, event)
+
+            self.set_state(state, context)
+
+        execute_lifecycle("before")
+        execute_transition()
+        execute_lifecycle("after")
