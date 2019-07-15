@@ -165,7 +165,7 @@ def binary_multiples():
         return context["value"] % context["divisor"]
 
     return {
-        "initialContext":  {"divisor": 3, "value": 0, "results": list()},
+        "initialContext":  {"divisor": 3, "value": 0},
         "initialState": 0,
         "validStates": {0, 1, 2},
         "acceptedStates": {0},
@@ -176,15 +176,14 @@ def binary_multiples():
 
 
 def test_machine(binary_multiples):
-    print(f"\n{binary_multiples}")
+    results = list()
 
     for _ in range(100):
         machine = StateMachine(binary_multiples)
         result = 0
 
         while not machine.is_accepted(machine.state) \
-                or not result \
-                or result in machine.context["results"]:
+                or not result or result in results:
             event = choice(list(machine.blueprint["alphabet"]))
 
             machine.transition(event)
@@ -193,4 +192,4 @@ def test_machine(binary_multiples):
 
         print(f"{machine}: {result:b} ({result})")
         assert result % machine.context["divisor"] == 0
-        machine.context["results"].append(result)
+        results.append(result)
